@@ -3,6 +3,8 @@ $this->title = 'Товары';
 
 
 echo \yii\helpers\Html::tag('h1', $this->title).
+    \yii\helpers\Html::a('+ добавить', '/admin/good?act=add', ['class' => 'btn btn-default']).
+    \yii\helpers\Html::tag('br', '', ['style' => 'margin-bottom: 20px;']).
     \kartik\grid\GridView::widget([
         'dataProvider'  =>  $dataProvider,
         'summary'       =>  false,
