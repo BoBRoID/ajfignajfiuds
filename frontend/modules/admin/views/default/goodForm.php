@@ -1,3 +1,16 @@
+<?php
+
+switch(\Yii::$app->request->get("act")){
+    case 'add':
+        $mode = 'Добавление';
+        break;
+    case 'edit':
+        $mode = 'Редактирование';
+}
+
+$this->title = $mode.' товара '.$good->name;
+?>
+<h1><?=$mode?> товара</h1>
 <div class="col-xs-12">
     <div class="col-xs-8 col-xs-offset-2">
         <div class="well">

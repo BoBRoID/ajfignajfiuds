@@ -52,6 +52,10 @@ class GoodForm extends Model
         $this->good = $good;
     }
 
+    public function getGood(){
+        return $this->good;
+    }
+
     public function save(){
         if(empty($this->good)){
             $this->good = new Good();

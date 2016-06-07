@@ -151,12 +151,22 @@ class SiteController extends Controller
     }
 
     public function actionGood($link){
-        $id = preg_replace('/\w+-g/', '', $link);
+        preg_match_all('/-g\d+/', $link, $matches);
+
+        if(!array_key_exists(0, $matches) && !array_key_exists(0, $matches[0])){
+            throw new NotFoundHttpException("Не найден идентификатор товара!");
+        }
+
+        $id = preg_replace('/\D+/', '', $matches['0']['0']);
 
         $good = Good::findOne(['id' => $id]);
 
         if(!$good){
             throw new NotFoundHttpException("Товар с идентификатором {$id} не найден!");
+        }
+
+        if(preg_replace('/-g\d+/', '', $link) != $good->link){
+            return $this->redirect('/good/'.$good->getLink());
         }
 
         return $this->render('good', [

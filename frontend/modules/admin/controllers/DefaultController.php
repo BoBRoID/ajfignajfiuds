@@ -21,6 +21,8 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
+        return $this->redirect('/admin/goods');
+
         return $this->render('index');
     }
     
@@ -72,21 +74,26 @@ class DefaultController extends Controller
         return $store->count;
     }
 
-    public function actionGood($id){
+    public function actionGood($id = ''){
         $good = Good::findOne(['id' => $id]);
 
-        if(!$good){
+        if(!$good && !\Yii::$app->request->get("act") == 'add'){
             throw new NotFoundHttpException("Товар с идентификатором {$id} не найден!");
         }
 
-        if(\Yii::$app->request->get("act") == 'edit'){
+        if(\Yii::$app->request->get("act") == 'edit' || \Yii::$app->request->get("act") == 'add'){
             $goodForm = new GoodForm();
 
-            $goodForm->loadGood($good);
+            if($good){
+                $goodForm->loadGood($good);
+            }
+
             if(\Yii::$app->request->post("GoodForm")){
                 $goodForm->load(\Yii::$app->request->post());
 
-                $goodForm->save();
+                if($goodForm->save() && \Yii::$app->request->get("act") == 'add'){
+                    return $this->redirect('/admin/good/'.$goodForm->good->id);
+                }
             }
 
             return $this->render('goodForm', [
