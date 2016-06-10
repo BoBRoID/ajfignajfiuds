@@ -30,7 +30,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'only' => ['logout', 'signup', 'cabinet'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -38,7 +38,7 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'cabinet'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -91,7 +91,7 @@ class SiteController extends Controller
         }
 
         $model = new LoginForm();
-        
+
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         } else {
@@ -99,6 +99,18 @@ class SiteController extends Controller
                 'model' => $model,
             ]);
         }
+    }
+
+    public function actionCabinet(){
+        /*if(\Yii::$app->user->isGuest){
+            return $this->redirect("/#login");
+        }*/
+
+        $customer = \Yii::$app->user;
+
+        return $this->render('cabinet', [
+            'customer'  =>  $customer
+        ]);
     }
 
     /**
@@ -137,7 +149,7 @@ class SiteController extends Controller
     }
 
     public function actionCategory($link){
-        $category = Category::findOne(['link' => $link]);
+        $category = Category::find()->where(['link' => $link])->with('childs')->one();
 
         if(!$category){
             throw new NotFoundHttpException("Категория не найдена!");
@@ -146,7 +158,7 @@ class SiteController extends Controller
         return $this->render('category', [
             'category'      =>  $category,
             'categoryGoods' =>  new ActiveDataProvider([
-                'query' =>  Good::find()->where(['categoryID' => $category->id])
+                'query' =>  $category->getSubcategoriesGoods()
             ])
         ]);
     }

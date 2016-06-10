@@ -21,6 +21,9 @@ return [
         ],
     ],
     'components' => [
+        'authManager' => [
+            'class' => 'yii\rbac\PhpManager',
+        ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,

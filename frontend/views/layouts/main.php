@@ -3,6 +3,7 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+use frontend\models\Category;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
@@ -27,6 +28,12 @@ AppAsset::register($this);
 
 <div class="wrap">
     <?php
+    $categories = [];
+
+    foreach(Category::findAll(['parent' => 0]) as $category){
+        $categories[] = ['url' => '/category/'.$category->link, 'label' => $category->name];
+    }
+
     NavBar::begin([
         'brandLabel' => Html::img('/img/logo.png'),
         'brandUrl' => Yii::$app->homeUrl,
@@ -36,7 +43,7 @@ AppAsset::register($this);
     ]);
     $menuItems = [
         ['label' => 'Главная', 'url' => ['/site/index']],
-        ['label' => 'Категории', 'url' => ['/site/about'], ],
+        ['label' => 'Категории', 'url' => ['/site/about'], 'items' =>  $categories],
         ['label' => 'Контакты', 'url' => ['/site/contact']],
     ];
     if (Yii::$app->user->isGuest) {

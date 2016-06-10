@@ -38,7 +38,7 @@ class LeftSidebarWidget extends Widget
 
     public function renderItems(){
         $items = [];
-        foreach (Category::find()->where(['parent' => 0])->with('childs')->with('goods')->each() as $category){
+        foreach (Category::find()->where(['parent' => 0])->with('childs')->each() as $category){
             $items[] = $this->renderItem($category);
         }
 
@@ -51,7 +51,7 @@ class LeftSidebarWidget extends Widget
         $hasChilds = !empty($category->childs);
 
         if(!$subcategory){
-            $categoryName .= Html::tag('span', count($category->goods), ['class' => 'badge pull-right']);
+            $categoryName .= Html::tag('span', $category->getSubcategoriesGoods()->count(), ['class' => 'badge pull-right']);
         }
 
         $text .= Html::a($categoryName, '/category/'.$category->link);

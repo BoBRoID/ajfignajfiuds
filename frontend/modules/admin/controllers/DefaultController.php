@@ -4,8 +4,11 @@ namespace frontend\modules\admin\controllers;
 
 use common\models\Category;
 use common\models\Good;
+use frontend\modules\admin\models\CategoryForm;
 use frontend\modules\admin\models\GoodForm;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -25,7 +28,34 @@ class DefaultController extends Controller
 
         return $this->render('index');
     }
-    
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'denyCallback' => function ($rule, $action) {
+                    return $this->goHome();
+                },
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'logout' => ['post'],
+                ],
+            ],
+        ];
+    }
+
     public function actionCategories(){
         return $this->render('categories', [
             'dataProvider'  =>  new ActiveDataProvider([
@@ -34,12 +64,33 @@ class DefaultController extends Controller
         ]);
     }
     
-    public function actionCategory($id){
+    public function actionCategory($id = ''){
         $category = Category::findOne(['id' => $id]);
 
-        if(!$category){
+        if(!$category && \Yii::$app->request->get("act") != 'add'){
             throw new NotFoundHttpException("Категория с идентификатором {$id} не найдена!");
         }
+
+        if(\Yii::$app->request->get("act") == 'edit' || \Yii::$app->request->get("act") == 'add'){
+            $categoryForm = new CategoryForm();
+
+            if($category){
+                $categoryForm->loadCategory($category);
+            }
+
+            if(\Yii::$app->request->post("CategoryForm")){
+                $categoryForm->load(\Yii::$app->request->post());
+
+                if($categoryForm->save() && \Yii::$app->request->get("act") == 'add'){
+                    return $this->redirect('/admin/category/'.$categoryForm->category->id);
+                }
+            }
+
+            return $this->render('categoryForm', [
+                'category'  =>  $categoryForm
+            ]);
+        }
+
 
         return $this->render('category', [
             'category'  =>  $category
@@ -77,7 +128,7 @@ class DefaultController extends Controller
     public function actionGood($id = ''){
         $good = Good::findOne(['id' => $id]);
 
-        if(!$good && !\Yii::$app->request->get("act") == 'add'){
+        if(!$good && \Yii::$app->request->get("act") != 'add'){
             throw new NotFoundHttpException("Товар с идентификатором {$id} не найден!");
         }
 

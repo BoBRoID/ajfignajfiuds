@@ -16,4 +16,18 @@ class Category extends \common\models\Category
         return $this->hasMany(Good::className(), ['categoryID' => 'id']);
     }
 
+    public function getSubcategoriesGoods(){
+        $categories = [$this->id];
+
+        if(!empty($this->childs)){
+            foreach($this->childs as $child){
+                $categories[] = $child->id;
+            }
+
+        }
+
+
+        return Good::find()->andWhere(['in', 'categoryID', $categories]);
+    }
+
 }
