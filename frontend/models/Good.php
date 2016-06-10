@@ -8,8 +8,6 @@
 
 namespace frontend\models;
 
-
-use common\models\Category;
 use common\models\GoodPhoto;
 use common\models\GoodStore;
 use yii\db\ActiveQuery;
