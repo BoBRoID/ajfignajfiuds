@@ -64,7 +64,7 @@ class m160607_214357_demo_data extends Migration
         }
 
         $category = new \common\models\Category([
-            'name'  =>  'Мобильные телефоны'
+            'name'  =>  'Телефоны'
         ]);
 
         $category->save(false);

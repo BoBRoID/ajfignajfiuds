@@ -22,7 +22,8 @@ return [
     ],
     'components' => [
         'authManager' => [
-            'class' => 'yii\rbac\PhpManager',
+            'class'         =>  'yii\rbac\PhpManager',
+            'defaultRoles'  =>  ['user', 'admin']
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -49,7 +50,7 @@ return [
                 'admin/<action>'    =>  'admin/default/<action>',
                 'admin/<action:(category|good)>/<id>'    =>  'admin/default/<action>',
                 '<action>'          =>  'site/<action>',
-                'category/<link>'   =>  'site/category',
+                'category/<link:(.*)>'   =>  'site/category',
                 'good/<link>'       =>  'site/good',
                 '<action>/<param>'  =>  'site/<action>',
             ],

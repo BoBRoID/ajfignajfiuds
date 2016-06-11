@@ -1,31 +1,68 @@
 <?php
 
-switch(\Yii::$app->request->get("act")){
+use kartik\form\ActiveForm;
+use yii\helpers\Html;
+
+switch(\Yii::$app->request->get('act')){
     case 'add':
-        $mode = 'Добавление';
+        $mode = 'Добавление категории';
         break;
     case 'edit':
-        $mode = 'Редактирование';
+        $this->params['breadcrumbs'][] = [
+            'label' =>  'Категории',
+            'url'   =>  '/admin/categories'
+        ];
+
+        $this->params['breadcrumbs'][] = [
+            'label' =>  $category->name,
+            'url'   =>  '/admin/category/'.$category->category->id
+        ];
+
+        $mode = 'Редактирование категории';
+        break;
 }
 
-$this->title = $mode.' категории '.$category->name;
+$possibleCategories = \common\models\Category::find()
+    ->select(['id', 'name']);
 
-$form = \kartik\form\ActiveForm::begin();
+if(\Yii::$app->request->get('act') == 'edit'){
+    $possibleCategories->andWhere("`id` != '{$category->category->id}'");
 
-echo \yii\helpers\Html::tag('div',
-    \yii\helpers\Html::tag('div',
-        $form->field($category, 'name').
-        $form->field($category, 'parent').
-        \yii\helpers\Html::tag('div',
-            \yii\helpers\Html::button('Сохранить', ['class' => 'btn btn-success', 'type' => 'submit']),
+    if(!empty($category->parent)){
+        $possibleCategories->andWhere("`parent` != '{$category->category->id}'");
+    }
+}
+
+
+$possibleCategories = $possibleCategories->orderBy('created ASC')->asArray()->all();
+
+$this->title = $mode.' '.$category->name;
+
+$this->params['breadcrumbs'][] = $mode;
+
+$form = ActiveForm::begin([
+    'type'  =>  ActiveForm::TYPE_HORIZONTAL
+]);
+
+echo Html::tag('div',
+    Html::tag('div',
+        Html::tag('div',
+            Html::tag('h3', $this->title).
+            $form->field($category, 'name').
+            $form->field($category, 'parent')->dropDownList(array_merge([0 => 'отсутствует'], \yii\helpers\ArrayHelper::map($possibleCategories, 'id', 'name'))).
+            Html::tag('div',
+                Html::button('Сохранить', ['class' => 'btn btn-success', 'type' => 'submit']),
+                [
+                    'class' =>  'text-center'
+                ]),
             [
-                'class' =>  'text-center'
+                'class' =>  'box'
             ]),
         [
-            'class' =>  'well well-sm'
+            'class' =>  'col-md-10 col-xs-offset-1'
         ]),
     [
-        'class' =>  'col-xs-8 col-xs-offset-2'
+        'class' =>  'col-xs-12'
     ]);
 
 $form->end();

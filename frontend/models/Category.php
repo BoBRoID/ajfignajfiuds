@@ -11,7 +11,7 @@ namespace frontend\models;
 
 class Category extends \common\models\Category
 {
-
+    
     public function getGoods(){
         return $this->hasMany(Good::className(), ['categoryID' => 'id']);
     }

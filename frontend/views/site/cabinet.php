@@ -17,11 +17,14 @@ _________________________________________________________ -->
 
             <ul class="nav nav-pills nav-stacked">
                 <li class="active">
-                    <a href="customer-orders.html"><i class="fa fa-user"></i> Мой аккаунт</a>
+                    <a href="/cabinet"><i class="fa fa-user"></i> Мой аккаунт</a>
                 </li>
-                <?php if(\Yii::$app->user->can('admin')){ ?>
+                <?php if(\Yii::$app->user->identity->accessLevel == 1){ ?>
                 <li>
-                    <a href="/admin/"><i class="fa fa-list"></i> Товары</a>
+                    <a href="/admin/goods"><i class="fa fa-list"></i> Товары</a>
+                </li>
+                <li>
+                    <a href="/admin/categories"><i class="fa fa-list"></i> Категории</a>
                 </li>
                 <?php }
                 echo Html::tag('li', Html::a('<i class="fa fa-sign-out"></i> Выйти',

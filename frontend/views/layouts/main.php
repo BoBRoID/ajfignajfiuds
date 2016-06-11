@@ -31,7 +31,7 @@ AppAsset::register($this);
     $categories = [];
 
     foreach(Category::findAll(['parent' => 0]) as $category){
-        $categories[] = ['url' => '/category/'.$category->link, 'label' => $category->name];
+        $categories[] = ['url' => '/category/'.$category->link, 'label' => $category->name, 'options' => ['class' => 'yamm-content']];
     }
 
     NavBar::begin([
@@ -43,7 +43,7 @@ AppAsset::register($this);
     ]);
     $menuItems = [
         ['label' => 'Главная', 'url' => ['/site/index']],
-        ['label' => 'Категории', 'url' => ['/site/about'], 'items' =>  $categories],
+        ['label' => 'Категории', 'url' => ['/site/about'], 'items' =>  $categories, 'options' => ['class' => 'dropdown yamm-fw']],
         ['label' => 'Контакты', 'url' => ['/site/contact']],
     ];
     if (Yii::$app->user->isGuest) {

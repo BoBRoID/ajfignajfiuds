@@ -7,14 +7,22 @@
  */
 
 /** @var \common\models\Good $good */
-$this->title = 'Просмотр товара "'.$good->name.'"';
+$this->title = 'Товар "'.$good->name.'"';
 
-echo \yii\helpers\Html::tag('h1', $this->title.\yii\helpers\Html::tag('small', \yii\helpers\Html::a('редактировать', '/admin/good/'.$good->id.'?act=edit')));
+$this->params['breadcrumbs'][] = [
+    'url'       =>  '/admin/goods',
+    'label'     =>  'Товары'
+];
+
+$this->params['breadcrumbs'][] = $good->name;
+
 ?>
 <div class="col-xs-12">
-    <div class="col-xs-8 col-xs-offset-2">
-        <div class="well">
-            <table class="table table-stripped">
+    <div class="col-xs-10 col-xs-offset-1">
+        <div class="box">
+            <?=\yii\helpers\Html::tag('h3', $this->title)?>
+            <?=\yii\helpers\Html::a('редактировать', '/admin/good/'.$good->id.'?act=edit', ['class' => 'btn btn-default'])?>
+            <table class="table table-stripped" style="margin-top: 20px;">
                 <tr>
                     <td>
                         Название

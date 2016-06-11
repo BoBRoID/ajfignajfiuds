@@ -1,22 +1,35 @@
 <?php
+use kartik\form\ActiveForm;
 
-switch(\Yii::$app->request->get("act")){
+switch(\Yii::$app->request->get('act')){
     case 'add':
-        $mode = 'Добавление';
+        $mode = 'Добавление товара';
         break;
     case 'edit':
-        $mode = 'Редактирование';
+        $this->params['breadcrumbs'][] = [
+            'label' =>  'Товары',
+            'url'   =>  '/admin/goods'
+        ];
+
+        $this->params['breadcrumbs'][] = [
+            'label' =>  $good->name,
+            'url'   =>  '/admin/good/'.$good->good->id
+        ];
+
+        $mode = 'Редактирование товара';
+        break;
 }
 
-$this->title = $mode.' товара '.$good->name;
-?>
-<h1><?=$mode?> товара</h1>
-<div class="col-xs-12">
-    <div class="col-xs-8 col-xs-offset-2">
-        <div class="well">
-        <?php
-        use kartik\form\ActiveForm;
 
+$this->params['breadcrumbs'][] = $mode;
+
+$this->title = $mode.' "'.$good->name.'"';
+?>
+<div class="col-xs-12">
+    <div class="col-xs-10 col-xs-offset-1">
+        <div class="box">
+            <h3><?=$this->title?></h3>
+        <?php
         $form = ActiveForm::begin([
             'type'  =>  ActiveForm::TYPE_HORIZONTAL
         ]);

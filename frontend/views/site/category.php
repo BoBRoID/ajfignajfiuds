@@ -1,7 +1,14 @@
 <?php
 $this->title = 'Категория '.$category->name;
 
-$this->params['breadcrumbs'][] = $this->title;
+if(!empty($category->parentCategory)){
+    $this->params['breadcrumbs'][] = [
+        'label' =>  $category->parentCategory->name,
+        'url'   =>  \yii\helpers\Url::to(['/category/'.$category->parentCategory->link])
+    ];
+}
+
+$this->params['breadcrumbs'][] = $category->name;
 
 echo \frontend\widgets\LeftSidebarWidget::widget([
     'category'  =>  $category

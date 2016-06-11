@@ -2,21 +2,18 @@
 
 use yii\db\Migration;
 
-class m160607_194039_stores extends Migration
+class m160611_140428_users_access_level extends Migration
 {
     public function up()
     {
-        $this->createTable('stores', [
-            'id'        =>  $this->bigPrimaryKey(),
-            'name'      =>  $this->string(),
-        ]);
+        $this->addColumn('user', 'accessLevel', $this->smallInteger()->unsigned()->defaultValue(0));
     }
 
     public function down()
     {
-        echo "m160607_194039_stores cannot be reverted.\n";
+        echo "m160611_140428_users_access_level cannot be reverted.\n";
 
-        return true;
+        return false;
     }
 
     /*
