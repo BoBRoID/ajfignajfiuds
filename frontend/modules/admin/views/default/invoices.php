@@ -56,8 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'class'     =>  'box'
     ],
     'layout'    =>
-        Html::tag('h1', $this->title).
-        Html::a('+ добавить', '/admin/good?act=add', ['class' => 'btn btn-default']).'<br><br>{items}<div class="text-center">{pager}</div>',
+        Html::tag('h1', $this->title).'<br><br>{items}<div class="text-center">{pager}</div>',
     'columns'       =>  [
         [
             'attribute' =>  'id',
