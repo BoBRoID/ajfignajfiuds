@@ -16,11 +16,80 @@ $this->params['breadcrumbs'][] = [
 
 $this->params['breadcrumbs'][] = $good->name;
 
+$this->registerJsFile('/js/sweetalert.min.js', ['depends' => 'yii\web\JqueryAsset']);
+$this->registerCssFile('/css/sweetalert.css');
+
+$js = <<<'JS'
+$("body").on('click', '.transferItem', function(e){
+    var button = $(this);
+
+    swal({
+      title: "Переместить товары",
+      text: "Сколько товаров вы хотите переместить?",
+      type: "input",
+      showCancelButton: true,
+      closeOnConfirm: false,
+      animation: "slide-from-top",
+      inputPlaceholder: "Write something"
+    },
+    function(inputValue){
+      if (inputValue === false) return false;
+      
+      if (inputValue === "") {
+        swal.showInputError("Необходимо заполнить это поле!");
+        return false
+      }else if(inputValue > parseInt(button.parent().parent().find("button.kv-editable-value").html().replace(/\D+/, ''))){
+        swal.showInputError("Нельзя переместить больше чем есть!");
+        return false;
+      }
+      
+      swal({
+          title: "Переместить товары",
+          text: "Введите ID склада",
+          type: "input",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          animation: "slide-from-top",
+          inputPlaceholder: "Write something"
+        },
+        function(store){
+          if (store === false) return false;
+          
+          if (store === "") {
+            swal.showInputError("Необходимо заполнить это поле!");
+            return false
+          }
+          
+          $.ajax({
+            type: 'POST',
+            url: '/admin/transfer-items',
+            data: {
+                'sourceStore': button.attr('data-storeid'),
+                'targetStore': store,
+                'itemsCount': inputValue,
+                'itemID': $("#goodID").attr('data-itemID')
+            },
+            success: function(data){
+                swal("Успех!", "Вы переместили " + inputValue + " товаров на склад " + store, "success");
+                location.reload();
+            },
+            error: function(data){
+                swal("Неудача!", "Не удалось переместить товары со склада. Причина: " + data.responseText, "error");
+            }
+        });
+          
+        });
+    });
+});
+JS;
+
+$this->registerJs($js);
+
 ?>
 <div class="col-xs-12">
     <div class="col-xs-10 col-xs-offset-1">
         <div class="box">
-            <?=\yii\helpers\Html::tag('h3', $this->title)?>
+            <?=\yii\helpers\Html::tag('h3', $this->title, ['data-itemID' => $good->id, 'id' => 'goodID'])?>
             <?=\yii\helpers\Html::a('редактировать', '/admin/good/'.$good->id.'?act=edit', ['class' => 'btn btn-default'])?>
             <table class="table table-stripped" style="margin-top: 20px;">
                 <tr>
@@ -100,7 +169,8 @@ $this->params['breadcrumbs'][] = $good->name;
                                         return $good->getBalance($model->id)->count.' шт.';
                                     },
                                     'class' =>  \kartik\grid\EditableColumn::className(),
-                                    'editableOptions'   =>  function($model, $key, $index) use (&$good){
+                                    'width'     =>  '40px',
+                                    'editableOptions'   =>  function($model, $key, $index) use ($good){
                                         return [
                                             'name'          =>  'storeCount',
                                             'value'         =>  empty($good->getBalance($model->id)->count) ? 0 : $good->getBalance($model->id)->count,
@@ -122,6 +192,19 @@ $this->params['breadcrumbs'][] = $good->name;
                                             ],
                                         ];
                                     },
+                                ],[
+                                    'class'     =>  \kartik\grid\ActionColumn::className(),
+                                    'width'     =>  '40px',
+                                    'buttons'   =>  [
+                                        'move'  =>  function($key, $model) use ($good){
+                                            if(empty($good->getBalance($model->id)->count)){
+                                                return '';
+                                            }
+
+                                            return \yii\bootstrap\Html::button('<i class="fa fa-truck"></i> переместить', ['data-storeID' => $model->id, 'class' => 'transferItem btn btn-link btn-sm']);
+                                        }
+                                    ],
+                                    'template'  =>  '{move}'
                                 ]
                             ]
                         ])?>

@@ -29,6 +29,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         <li class="active">
                             <a href="/admin/categories"><i class="fa fa-list"></i> Категории</a>
                         </li>
+                        <li>
+                            <a href="/admin/invoices"><i class="fa fa-file"></i> Накладные</a>
+                        </li>
                     <?php }
                     echo Html::tag('li', Html::a('<i class="fa fa-sign-out"></i> Выйти',
                         Url::to('/logout'), [

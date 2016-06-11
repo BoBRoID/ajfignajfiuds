@@ -39,7 +39,10 @@ class Good extends \yii\db\ActiveRecord
             }
         }
 
-        return new GoodStore();
+        return new GoodStore([
+            'goodID'    =>  $this->id,
+            'storeID'   =>  $id
+        ]);
     }
 
     /**

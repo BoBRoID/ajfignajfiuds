@@ -3,7 +3,7 @@ use kartik\grid\GridView;
 use yii\bootstrap\Html;
 use yii\helpers\Url;
 
-$this->title = 'Товары';
+$this->title = 'Накладные';
 
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -24,13 +24,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         <a href="/cabinet"><i class="fa fa-user"></i> Мой аккаунт</a>
                     </li>
                     <?php if(\Yii::$app->user->identity->accessLevel == 1){ ?>
-                        <li class="active">
+                        <li>
                             <a href="/admin/goods"><i class="fa fa-list"></i> Товары</a>
                         </li>
                         <li>
                             <a href="/admin/categories"><i class="fa fa-list"></i> Категории</a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="/admin/invoices"><i class="fa fa-file"></i> Накладные</a>
                         </li>
                     <?php }
@@ -48,37 +48,46 @@ $this->params['breadcrumbs'][] = $this->title;
         <!-- *** CUSTOMER MENU END *** -->
     </div>
 
-    <?=Html::tag('div', GridView::widget([
-        'dataProvider'  =>  $dataProvider,
-        'summary'       =>  false,
-        'pjax'          =>  true,
-        'options'       =>  [
-            'class'     =>  'box'
+<?=Html::tag('div', GridView::widget([
+    'dataProvider'  =>  $dataProvider,
+    'summary'       =>  false,
+    'pjax'          =>  true,
+    'options'       =>  [
+        'class'     =>  'box'
+    ],
+    'layout'    =>
+        Html::tag('h1', $this->title).
+        Html::a('+ добавить', '/admin/good?act=add', ['class' => 'btn btn-default']).'<br><br>{items}<div class="text-center">{pager}</div>',
+    'columns'       =>  [
+        [
+            'attribute' =>  'id',
+            'format'    =>  'html',
+            'value'     =>  function($model){
+                return Html::a($model->id, Url::to('/admin/invoice/'.$model->id));
+            }
         ],
-        'layout'    =>
-            Html::tag('h1', $this->title).
-            Html::a('+ добавить', '/admin/good?act=add', ['class' => 'btn btn-default']).'<br><br>{items}<div class="text-center">{pager}</div>',
-        'columns'       =>  [
-            'id',
-            [
-                'attribute' =>  'name',
-                'format'    =>  'html',
-                'value'     =>  function($model){
-                    return Html::a($model->name, '/admin/good/'.$model->id);
-                }
-            ],
-            [
-                'label' =>  'Категория',
-                'format'=>  'html',
-                'value' =>  function($model){
-                    if(empty($model->category)){
-                        return '';
-                    }
-
-                    return Html::a($model->category->name, '/admin/category/'.$model->category->id);
-                }
-            ]
+        [
+            'attribute' =>  'created',
+            'format'    =>  'html',
+            'value'     =>  function($model){
+                return \Yii::$app->formatter->asDatetime($model->created);
+            }
+        ],
+        [
+            'label' =>  'Из магазина',
+            'format'=>  'html',
+            'value' =>  function($model){
+                return $model->sourceStoreModel->name;
+            }
+        ],
+        [
+            'label' =>  'В магазин',
+            'format'=>  'html',
+            'value' =>  function($model){
+                return $model->targetStoreModel->name;
+            }
         ]
-    ]), [
-        'class' =>  'col-md-9'
-    ])?>
+    ]
+]), [
+    'class' =>  'col-md-9'
+])?>

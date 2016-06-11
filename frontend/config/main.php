@@ -48,7 +48,7 @@ return [
                 ''                  =>  'site/index',
                 'admin'             =>  'admin/default/index',
                 'admin/<action>'    =>  'admin/default/<action>',
-                'admin/<action:(category|good)>/<id>'    =>  'admin/default/<action>',
+                'admin/<action:(category|good|invoice)>/<id>'    =>  'admin/default/<action>',
                 '<action>'          =>  'site/<action>',
                 'category/<link:(.*)>'   =>  'site/category',
                 'good/<link>'       =>  'site/good',

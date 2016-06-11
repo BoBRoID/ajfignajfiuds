@@ -49,11 +49,11 @@ class Category extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'parent' => 'Parent',
-            'link' => 'Link',
-            'created' => 'Created',
-            'updated' => 'Updated',
+            'name' => 'Название',
+            'parent' => 'Родитель',
+            'link' => 'Ссылка',
+            'created' => 'Создано',
+            'updated' => 'Обновлено',
         ];
     }
 

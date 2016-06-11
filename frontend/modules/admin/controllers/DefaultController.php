@@ -2,6 +2,8 @@
 
 namespace frontend\modules\admin\controllers;
 
+use common\models\Invoice;
+use common\models\InvoiceItem;
 use frontend\models\Category;
 use frontend\models\Good;
 use frontend\modules\admin\models\CategoryForm;
@@ -63,7 +65,77 @@ class DefaultController extends Controller
             ])
         ]);
     }
-    
+
+    public function actionTransferItems(){
+        if(!\Yii::$app->request->isAjax){
+            throw new BadRequestHttpException('Данный метод доступен только через ajax!');
+        }
+
+        $invoice = new Invoice([
+            'sourceStore'   =>  \Yii::$app->request->post('sourceStore'),
+            'targetStore'   =>  \Yii::$app->request->post('targetStore')
+        ]);
+
+        $itemID = \Yii::$app->request->post('itemID');
+        $itemsCount = \Yii::$app->request->post('itemsCount');
+
+        $item = Good::findOne($itemID);
+
+        if(!$item){
+            throw new NotFoundHttpException("Товар с идентификатором {$itemID} не найден!");
+        }
+
+        if($item->getBalance($invoice->sourceStore)->isNewRecord){
+            throw new NotFoundHttpException("Склада с идентификатором {$invoice->sourceStore} не существует!");
+        }elseif ($item->getBalance($invoice->sourceStore)->count < $itemsCount){
+            throw new NotFoundHttpException("Невозможно взять со склада {$invoice->sourceStore} столько товара, так как его там столько нет!");
+        }
+
+        if(empty($invoice->targetStore)){
+            throw new NotFoundHttpException("Целевой склад с идентификатором {$invoice->targetStore} не найден!");
+        }
+        
+        $invoice->setItems([new InvoiceItem(['count' => $itemsCount, 'goodID' => $item->id])]);
+
+        $source = $item->getBalance($invoice->sourceStore);
+        $source->count -= $itemsCount;
+        $source->save(false);
+
+        $target = $item->getBalance($invoice->targetStore);
+        $target->save(false);
+        $target->count += $itemsCount;
+        $target->save(false);
+
+        $invoice->save(false);
+
+        return true;
+    }
+
+    public function actionInvoices(){
+        return $this->render('invoices', [
+            'dataProvider'  =>  new ActiveDataProvider([
+                'query' =>  Invoice::find()
+            ]),
+            'sort'  =>  [
+                'defaultOrder'  =>  [
+                    'created'   =>  SORT_DESC
+                ]
+            ]
+        ]);
+    }
+
+    public function actionInvoice($id){
+        $invoice = Invoice::findOne($id);
+
+        if(!$invoice){
+            throw new NotFoundHttpException("Не найдена накладная №{$id}!");
+        }
+
+        return $this->render('invoice',[
+            'invoice'   =>  $invoice
+        ]);
+    }
+
     public function actionCategory($id = ''){
         $category = Category::findOne(['id' => $id]);
 
