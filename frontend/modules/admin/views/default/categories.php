@@ -74,11 +74,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'attribute' =>  'parent',
             'width'     =>  '140px',
             'value'     =>  function($model){
-                if(empty($model->parent)){
+                if(empty($model->parent) || empty($model->parentCategory)){
                     return ' ';
                 }
 
-                return Html::a($model->parentCategory->name, Url::to('/admin/category/'.$model->id));
+                return Html::a($model->parentCategory->name, Url::to('/admin/category/'.$model->parentCategory->id));
             }
         ],
         [
